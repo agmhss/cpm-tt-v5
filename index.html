@@ -57,6 +57,43 @@
                 <button onclick="logout()" class="text-blue-200 hover:text-white transition-colors"><i data-lucide="log-out" class="w-5 h-5"></i></button>
             </div>
         </header>
+        <div id="loginScreen" class="min-h-screen bg-gray-100 flex items-center justify-center p-4 z-50 fixed inset-0">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border-t-4 border-blue-600">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-black text-blue-900 uppercase tracking-widest" id="loginSchoolName">ORIENTAL GAHSS</h1>
+            <p class="text-sm font-bold text-gray-500 mt-1">Smart CMS Portal</p>
+        </div>
+
+        <div class="space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Login As</label>
+                <select id="loginRole" class="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-gray-700 outline-none focus:border-blue-500 transition-colors" onchange="toggleTeacherNameInput()">
+                    <option value="admin">System Administrator</option>
+                    <option value="teacher">Staff / Teacher</option>
+                </select>
+            </div>
+
+            <div id="teacherNameGroup" class="hidden">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Teacher Name</label>
+                <input type="text" id="loginTeacherName" placeholder="Enter your official initials (e.g. VCK)" class="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold uppercase text-gray-700 outline-none focus:border-blue-500 transition-colors">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Secure Passkey</label>
+                <input type="password" id="loginPasskey" placeholder="Enter Passkey" class="w-full p-3 bg-gray-50 border-2 border-gray-200 rounded-xl font-bold text-gray-700 outline-none focus:border-blue-500 transition-colors">
+            </div>
+
+            <button onclick="attemptLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black p-3 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all mt-4 transform hover:scale-[1.02]">
+                <i data-lucide="lock" class="w-5 h-5"></i> SECURE LOGIN
+            </button>
+            <p id="loginError" class="text-xs text-red-500 font-bold text-center mt-3 hidden">Invalid Credentials!</p>
+        </div>
+    </div>
+</div>
+
+<div id="mainApp" class="hidden">
+    </div>
+        
 
         <nav class="bg-white shadow-sm flex overflow-x-auto shrink-0">
             <button onclick="switchAdminTab('tabAllotment')" class="admin-tab px-6 py-4 font-bold text-gray-500 hover:text-blue-600 border-b-4 border-transparent hover:border-blue-600 transition-all whitespace-nowrap active-tab border-blue-600 text-blue-700">Data & Allotment</button>
