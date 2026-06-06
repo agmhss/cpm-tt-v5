@@ -584,13 +584,22 @@ window.saveAllotmentToCloud = async function() {
 async function checkAndGenerateTeacherPasskeys() {
     let updated = false;
     let allTeachers = [...new Set(window.uiAllotments.map(a => a.teacherName))];
+    
     allTeachers.forEach(teacher => {
+        // தலைமையாசிரியர்களைத் தவிர்த்து மற்றவர்களுக்கு பாஸ்கீ உருவாக்குதல்
         if (!window.serverAuthData[teacher] && !teacher.includes('*')) {
-            window.serverAuthData[teacher] = Math.random().toString(36).substring(2, 8).toUpperCase();
+            // 🌟 புதிய மாற்றம்: TeacherName@2026 என உருவாக்குதல்
+            window.serverAuthData[teacher] = teacher + "@2026";
             updated = true;
         }
     });
-    if (updated) await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "saveAuth", data: window.serverAuthData }) });
+    
+    if (updated) {
+        await fetch(SCRIPT_URL, { 
+            method: 'POST', 
+            body: JSON.stringify({ action: "saveAuth", data: window.serverAuthData }) 
+        });
+    }
 }
 
 window.renderPasskeysUI = function() {
