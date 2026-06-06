@@ -4,12 +4,124 @@
  */
 
 const APP_CONFIG = {
-    fullName: "ORIENTAL GAHSS", 
-    shortName: "ORIENTAL GAHSS",                                           
-    scriptUrl: "https://script.google.com/macros/s/AKfycby5AWmV6uxA09viH5ooofU7pI7Tc3gwjTECenaqoI1u9qD-RqNYWQBcNbSuk0hpb0ORJg/exec" 
+    fullName: "GHSS CHOZHAPRAM", 
+    shortName: "GHSS CHOZHAPURAM",                                           
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxiG6ra4VTPDMQO0fdDYp1XBY7Pi7lzNX2xiApps2QfkCFMkEv9X_ErG0QLt7wSoJQ/exec" 
 };
 const SCRIPT_URL = APP_CONFIG.scriptUrl;
+// --- Security & Auth Configuration ---
+// Note: For a school project, client-side auth is acceptable. Keep this key safe!
+const ADMIN_PASSKEY = "MASTER@2026"; 
 
+window.serverAuthData = {}; // Stores passkeys fetched from cloud
+let currentUserRole = null;
+let currentUserName = null;
+
+// --- Login UI Handlers ---
+window.toggleTeacherNameInput = function() {
+    const role = document.getElementById('loginRole').value;
+    const nameGroup = document.getElementById('teacherNameGroup');
+    if (role === 'teacher') {
+        nameGroup.classList.remove('hidden');
+    } else {
+        nameGroup.classList.add('hidden');
+    }
+};
+
+window.attemptLogin = async function() {
+    const role = document.getElementById('loginRole').value;
+    const passkey = document.getElementById('loginPasskey').value;
+    const errorMsg = document.getElementById('loginError');
+    const teacherName = document.getElementById('loginTeacherName').value.trim().toUpperCase();
+
+    errorMsg.classList.add('hidden');
+
+    if (role === 'admin') {
+        if (passkey === ADMIN_PASSKEY) {
+            // Admin Success!
+            currentUserRole = 'admin';
+            currentUserName = 'ADMIN';
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').classList.remove('hidden');
+            
+            // Auto-sync data to get teacher passkeys
+            await syncFromCloud(); 
+            checkAndGenerateTeacherPasskeys(); // Admin auto-generates missing keys
+            
+        } else {
+            errorMsg.innerText = "Incorrect Admin Passkey!";
+            errorMsg.classList.remove('hidden');
+        }
+    } else if (role === 'teacher') {
+        if (!teacherName) {
+            errorMsg.innerText = "Please enter Teacher Name!";
+            errorMsg.classList.remove('hidden');
+            return;
+        }
+        
+        // Before validating teacher, we MUST download the auth ledger
+        errorMsg.innerText = "Verifying with Cloud...";
+        errorMsg.classList.remove('hidden');
+        errorMsg.classList.replace('text-red-500', 'text-blue-500');
+
+        try {
+            const response = await fetch(SCRIPT_URL);
+            const cloudData = JSON.parse(await response.text());
+            window.serverAuthData = cloudData.authData || {};
+
+            if (window.serverAuthData[teacherName] && window.serverAuthData[teacherName] === passkey) {
+                // Teacher Success!
+                currentUserRole = 'teacher';
+                currentUserName = teacherName;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').classList.remove('hidden');
+                
+                // Hide Admin tools, show Teacher portal (To be built in next phase)
+                setupTeacherPortalUI();
+            } else {
+                errorMsg.classList.replace('text-blue-500', 'text-red-500');
+                errorMsg.innerText = "Invalid Teacher Name or Passkey!";
+            }
+        } catch (e) {
+            errorMsg.classList.replace('text-blue-500', 'text-red-500');
+            errorMsg.innerText = "Network Error. Check connection.";
+        }
+    }
+};
+
+// --- Passkey Generation Engine (Admin Only) ---
+// This runs silently when the Admin logs in. If it finds new teachers without passkeys, it makes them.
+async function checkAndGenerateTeacherPasskeys() {
+    if (!window.rawAssignmentsData) return;
+    
+    let allTeachers = [...new Set(window.rawAssignmentsData.slice(1).map(row => String(row[1]).trim()))].filter(Boolean);
+    let updated = false;
+
+    allTeachers.forEach(teacher => {
+        if (!window.serverAuthData[teacher]) {
+            // Generate a random 6-character alphanumeric passkey
+            let randomKey = Math.random().toString(36).substring(2, 8).toUpperCase();
+            window.serverAuthData[teacher] = randomKey;
+            updated = true;
+        }
+    });
+
+    if (updated) {
+        console.log("New teachers found. Saving updated passkeys to cloud...");
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: "saveAuth", data: window.serverAuthData })
+        });
+        alert("System Notice: New Teacher Passkeys have been generated and saved to the 'Auth' sheet.");
+    }
+}
+
+// Placeholder for the next phase
+function setupTeacherPortalUI() {
+    // We will build this in the next prompt.
+    // This will hide the "Master Timetable" generation tools and show the "Preferences/Rest" input form.
+    alert(`Welcome to the Teacher Portal, ${currentUserName}! Your preference submission dashboard will load here.`);
+}
 // --- Global Trackers ---
 let generatedWeeklyTimetable = [];
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
