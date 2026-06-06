@@ -365,7 +365,7 @@ window.renderPasskeysUI = function() {
 window.downloadPasskeysPDF = function() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('p', 'mm', 'a4');
-    doc.setFontSize(16); doc.text("ORIENTAL GAHSS - Staff Portal Passkeys", 14, 20);
+    doc.setFontSize(16); doc.text("GHSS CHOZHAPURAM - Staff Portal Passkeys", 14, 20);
     doc.setFontSize(10); doc.text("CONFIDENTIAL: Hand over to respective staff only.", 14, 28);
     let tableBody = Object.entries(window.serverAuthData).map(([t, k]) => [t, k]);
     doc.autoTable({ startY: 35, head: [['Teacher Name', 'Secure Passkey']], body: tableBody, theme: 'grid', headStyles: { fillColor: [30, 58, 138] }});
