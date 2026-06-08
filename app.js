@@ -4,11 +4,12 @@
  */
 
 const APP_CONFIG = {
-    fullName: "AGMHSS PSW", 
-    shortName: "AGMHSS PSW",                                           
-    scriptUrl: "https://script.google.com/macros/s/AKfycbyd8tRhf0gzoKF__ysQVYunmLruK7EVF8DXOBx5_ubTPACGu1RcI66bkgCC5r3sF9We/exec" 
+    fullName: "GHSS CHOZHAPURAM", 
+    shortName: "GHSS CHOZHAPURAM",                                           
+    scriptUrl: "https://script.google.com/macros/s/AKfycbxiG6ra4VTPDMQO0fdDYp1XBY7Pi7lzNX2xiApps2QfkCFMkEv9X_ErG0QLt7wSoJQ/exec" 
 };
 const SCRIPT_URL = APP_CONFIG.scriptUrl;
+
 
 // ==========================================
 // 🌟 UI DROPDOWN LISTENERS
